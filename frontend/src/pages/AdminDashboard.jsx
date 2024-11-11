@@ -39,7 +39,7 @@ import { useEffect, useState } from "react"
   useEffect(() => {
     async function fetchLoans() {
       try {
-        const response = await fetch("http://localhost:5000/loans/loans",{
+        const response = await fetch("https://creditsea-assignment-2mxe.onrender.com/loans/loans",{
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -60,7 +60,7 @@ import { useEffect, useState } from "react"
       return alert("You are not authorized to verify loans.");
     }
     try {
-      const response = await fetch(`http://localhost:5000/loans/loan/approve/${loanId}`, {
+      const response = await fetch(`https://creditsea-assignment-2mxe.onrender.com/loans/loan/approve/${loanId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

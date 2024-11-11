@@ -40,7 +40,7 @@ export default function UsersDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/users`,{
+      const response = await fetch(`https://creditsea-assignment-2mxe.onrender.com/users`,{
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -58,7 +58,7 @@ export default function UsersDashboard() {
   // Handle role change
   const handleRoleChange = async (userId, newRole) => {
     try {
-      await fetch(`http://localhost:5000/users/update/${userId}`, {
+      await fetch(`https://creditsea-assignment-2mxe.onrender.com/users/update/${userId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

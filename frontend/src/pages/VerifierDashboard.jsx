@@ -24,7 +24,7 @@ export default function VerifierDashboard() {
   useEffect(() => {
     async function fetchLoans() {
       try {
-        const response = await fetch("http://localhost:5000/loans/loans",{
+        const response = await fetch("https://creditsea-assignment-2mxe.onrender.com/loans/loans",{
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -46,7 +46,7 @@ export default function VerifierDashboard() {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/loans/loan/verify/${loanId}`, {
+      const response = await fetch(`https://creditsea-assignment-2mxe.onrender.com/loans/loan/verify/${loanId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
