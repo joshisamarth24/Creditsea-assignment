@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import User, { IUser } from "../models/userModel";
 export interface AuthRequest extends Request {
-  user?: IUser; // Adding a user property to the request for access in role middleware
+  user?: IUser; 
 }
 
 
