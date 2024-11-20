@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'backend/**'
+      - 'backend/**' # Trigger only when files in the backend directory change
 
 env:
   EC2_HOST: ${{ secrets.EC2_HOST }}
@@ -17,46 +17,56 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
+    # Step 1: Checkout the repository
+    - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Set up Node.js
+    # Step 2: Set up Node.js environment
+    - name: Set Up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '18'
-        cache: 'npm'
+        node-version: '18' # Specify Node.js version
+        cache: 'npm' # Enable npm caching for faster builds
         cache-dependency-path: backend/package-lock.json
 
+    # Step 3: Install dependencies
     - name: Install Dependencies
       working-directory: ./backend
       run: npm ci
 
-    - name: Create SSH directory
+    # Step 4: Prepare SSH access
+    - name: Create SSH Directory
       run: mkdir -p ~/.ssh/
-
-    - name: Store SSH key
+    
+    - name: Add SSH Private Key
       run: |
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
         chmod 600 ~/.ssh/deploy_key
         
-    - name: Add host to known_hosts
-      run: |
-        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+    - name: Add EC2 Host to Known Hosts
+      run: ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
+    # Step 5: Deploy the application
     - name: Deploy to EC2
       working-directory: ./backend
       run: |
+        # Archive backend files
         tar -czf deploy.tar.gz ./*
+        # Copy archive to EC2 instance
         scp -i ~/.ssh/deploy_key deploy.tar.gz ${{ secrets.SSH_USER }}@${{ secrets.EC2_HOST }}:/tmp/
-        
+        # SSH into EC2 and deploy
         ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
           cd /var/www/backend
+          # Backup existing deployment
           backup_dir="/var/www/backups/backend-$(date +%Y%m%d-%H%M%S)"
           mkdir -p "$backup_dir"
           cp -r * "$backup_dir" 2>/dev/null || true
+          # Clean current deployment and extract new files
           rm -rf *
           tar -xzf /tmp/deploy.tar.gz
+          # Install production dependencies and restart server
           npm ci --production
           pm2 restart server
+          # Clean up temporary files
           rm /tmp/deploy.tar.gz
-EOF
+        EOF
