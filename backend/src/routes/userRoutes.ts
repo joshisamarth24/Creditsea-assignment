@@ -5,7 +5,7 @@ import roleMiddleware from "../middleware/roleMiddleware";
 import User from "../models/userModel";
 import { IUser } from "../models/userModel";
 
-// Extend Express Request type
+
 interface AuthRequest extends Request {
   user: IUser;
 }
