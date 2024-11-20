@@ -19,6 +19,7 @@ mongoose
 
 app.get("/", (req, res) => {
   res.send("Sab thik hai");
+  
 });
 app.use("/auth", authRoutes);
 app.use("/loans", loanRoutes);
