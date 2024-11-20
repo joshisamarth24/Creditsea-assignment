@@ -8,7 +8,7 @@ export interface ILoan extends Document {
   status: "pending" | "verified" | "approved" | "rejected";
   employmentStatus: string;
   employmentAddress: string;
-  applicantId: mongoose.Types.ObjectId; // reference to the User model
+  applicantId: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
