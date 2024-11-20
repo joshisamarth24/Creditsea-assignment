@@ -23,10 +23,7 @@ jobs:
         npm install
         npm run build
 
-    # Deploy and Restart with PM2
-    - name: Deploy with PM2
+    # Restart the application using PM2
+    - name: Restart Server with PM2
       run: |
-        cd backend
-
-        # Restart the application with PM2
-        pm2 reload all --update-env
+        pm2 restart backend
