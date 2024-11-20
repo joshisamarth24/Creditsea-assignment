@@ -18,7 +18,7 @@ mongoose
   .catch((error) => console.error("MongoDB connection error:", error));
 
 app.get("/", (req, res) => {
-  res.send("Server is running");
+  res.send("Everything is working fine");
 
 });
 app.use("/auth", authRoutes);
