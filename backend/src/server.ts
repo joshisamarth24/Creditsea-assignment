@@ -17,7 +17,9 @@ mongoose
   .then(() => console.log("MongoDB connected"))
   .catch((error) => console.error("MongoDB connection error:", error));
 
-
+app.get("/", (req, res) => {
+  res.send("Sab thik hai");
+});
 app.use("/auth", authRoutes);
 app.use("/loans", loanRoutes);
 app.use("/users", userRoutes);
