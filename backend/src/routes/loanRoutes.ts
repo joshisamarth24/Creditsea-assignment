@@ -9,7 +9,7 @@ interface AuthRequest extends Request {
   user: IUser;
 }
 
-// Create custom handler types that work with AuthRequest
+// Create custom handler types that work with AuthRequest type
 type AuthRequestHandler = (
   req: AuthRequest,
   res: Response,
