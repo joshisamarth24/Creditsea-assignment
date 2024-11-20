@@ -113,7 +113,7 @@ export default function ApplicationForm() {
     setIsLoading(true);
     
     try {
-      const response = await fetch('https://creditsea-assignment-2mxe.onrender.com/loans/loan', {
+      const response = await fetch('https://asdfkjakdsfw.info/loans/loan', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

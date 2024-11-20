@@ -53,7 +53,7 @@ export default function LoanDashboard() {
       setIsLoading(true);
       try {
         const response = await fetch(
-          `https://creditsea-assignment-2mxe.onrender.com/loans/userLoans/${user?._id}`,
+          `https://asdfkjakdsfw.info/loans/userLoans/${user?._id}`,
           {
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('token')}`

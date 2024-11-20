@@ -40,7 +40,7 @@ export default function UsersDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`https://creditsea-assignment-2mxe.onrender.com/users`,{
+      const response = await fetch(`https://asdfkjakdsfw.info/users`,{
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -58,7 +58,7 @@ export default function UsersDashboard() {
   // Handle role change
   const handleRoleChange = async (userId, newRole) => {
     try {
-      await fetch(`https://creditsea-assignment-2mxe.onrender.com/users/update/${userId}`, {
+      await fetch(`https://asdfkjakdsfw.info/users/update/${userId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

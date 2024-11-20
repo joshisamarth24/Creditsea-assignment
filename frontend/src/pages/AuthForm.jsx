@@ -91,7 +91,7 @@ export default function AuthForm() {
 
     setIsLoading(true)
     try {
-      const response = await fetch('https://creditsea-assignment-2mxe.onrender.com/auth/login', {
+      const response = await fetch('https://asdfkjakdsfw.info/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -141,7 +141,7 @@ export default function AuthForm() {
 
     setIsLoading(true)
     try {
-      const response = await fetch('https://creditsea-assignment-2mxe.onrender.com/auth/register', {
+      const response = await fetch('https://asdfkjakdsfw.info/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
