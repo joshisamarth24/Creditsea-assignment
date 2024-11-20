@@ -19,12 +19,12 @@ jobs:
     # Build the backend application
     - name: Build Backend Application
       run: |
-        cd backend
-        git pull origin main
+        cd ~/actions-runner/_work/Creditsea-assignment/Creditsea-assignment/backend
         npm install
         npm run build
 
     # Restart the application using PM2
     - name: Restart Server with PM2
       run: |
+        cd ~/actions-runner/_work/Creditsea-assignment/Creditsea-assignment/backend
         pm2 restart server

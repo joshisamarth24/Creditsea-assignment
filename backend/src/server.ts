@@ -18,8 +18,8 @@ mongoose
   .catch((error) => console.error("MongoDB connection error:", error));
 
 app.get("/", (req, res) => {
-  res.send("Sab thik hai");
-  
+  res.send("Server is running");
+
 });
 app.use("/auth", authRoutes);
 app.use("/loans", loanRoutes);
