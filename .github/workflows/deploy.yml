@@ -14,7 +14,7 @@ env:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     
     steps:
       # Step 1: Checkout the repository
@@ -46,7 +46,7 @@ jobs:
       - name: Add SSH Private Key
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
+          chmod 400 ~/.ssh/deploy_key
           
       - name: Add EC2 Host to Known Hosts
         run: ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
@@ -68,10 +68,10 @@ jobs:
             mkdir -p "$backup_dir"
             cp -r * "$backup_dir" 2>/dev/null || true
             # Clean current deployment and extract new files
-            sudo rm -rf *
+            rm -rf *
             tar -xzf /tmp/deploy.tar.gz
             # Install production dependencies and restart server
-            sudo npm ci --production
+            npm ci --production
             pm2 restart server
             # Clean up temporary files
             sudo rm /tmp/deploy.tar.gz
