@@ -61,17 +61,18 @@ jobs:
           scp -i ~/.ssh/deploy_key deploy.tar.gz ${{ secrets.SSH_USER }}@${{ secrets.EC2_HOST }}:/tmp/
           # SSH into EC2 and deploy
           ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            mkdir -p /var/www/backend
             cd /var/www/backend
             # Backup existing deployment
             backup_dir="/var/www/backups/backend-$(date +%Y%m%d-%H%M%S)"
             mkdir -p "$backup_dir"
             cp -r * "$backup_dir" 2>/dev/null || true
             # Clean current deployment and extract new files
-            rm -rf *
+            sudo rm -rf *
             tar -xzf /tmp/deploy.tar.gz
             # Install production dependencies and restart server
-            npm ci --production
+            sudo npm ci --production
             pm2 restart server
             # Clean up temporary files
-            rm /tmp/deploy.tar.gz
+            sudo rm /tmp/deploy.tar.gz
           EOF
