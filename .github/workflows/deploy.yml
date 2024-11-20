@@ -20,33 +20,13 @@ jobs:
     - name: Build Backend Application
       run: |
         cd backend
-        # Add your build steps here, e.g., npm install, mvn package, etc.
-        # Example for a Node.js app:
         npm install
         npm run build
 
-    # Deploy to EC2
-    - name: Deploy to EC2
-      env:
-        EC2_HOST: ${{ secrets.EC2_HOST }}
-        SSH_USER: ${{ secrets.SSH_USER }}
+    # Deploy and Restart with PM2
+    - name: Deploy with PM2
       run: |
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key.pem
-        chmod 600 ssh_key.pem
+        cd backend
 
-        # Compress and transfer the build directory
-        tar -czf backend.tar.gz backend
-        scp -i ssh_key.pem backend.tar.gz $SSH_USER@$EC2_HOST:/tmp/backend.tar.gz
-
-        # SSH into the EC2 instance to extract and deploy
-        ssh -i ssh_key.pem $SSH_USER@$EC2_HOST << 'EOF'
-          set -e
-          cd /var/www/html  # Adjust this path to your deployment directory
-          sudo rm -rf backend  # Remove the old code
-          sudo mkdir -p backend
-          sudo tar -xzf /tmp/backend.tar.gz -C backend --strip-components=1
-          sudo systemctl restart nginx  # Restart Nginx if needed
-        EOF
-
-        # Cleanup
-        rm -f ssh_key.pem backend.tar.gz
+        # Restart the application with PM2
+        pm2 reload all --update-env
