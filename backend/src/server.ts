@@ -11,13 +11,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
+
 mongoose
   .connect(process.env.MONGODB_URI as string)
   .then(() => console.log("MongoDB connected"))
   .catch((error) => console.error("MongoDB connection error:", error));
 
-// Routes
+
 app.use("/auth", authRoutes);
 app.use("/loans", loanRoutes);
 app.use("/users", userRoutes);
