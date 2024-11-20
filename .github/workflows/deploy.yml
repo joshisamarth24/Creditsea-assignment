@@ -26,4 +26,4 @@ jobs:
     # Restart the application using PM2
     - name: Restart Server with PM2
       run: |
-        pm2 restart backend
+        pm2 restart server
