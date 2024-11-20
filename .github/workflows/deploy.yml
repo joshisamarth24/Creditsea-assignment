@@ -1,78 +1,52 @@
-name: Backend CI/CD Pipeline
+name: Deploy Backend
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'backend/**' # Trigger only when files in the backend directory change
-
-env:
-  EC2_HOST: ${{ secrets.EC2_HOST }}
-  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-  SSH_USER: ${{ secrets.SSH_USER }}
+      - 'backend/**'
 
 jobs:
-  build-and-deploy:
+  deploy-backend:
     runs-on: self-hosted
-    
+
     steps:
-      # Step 1: Checkout the repository
-      - name: Checkout Code
-        uses: actions/checkout@v3
+    # Checkout the repository
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js environment
-      - name: Set Up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18' # Specify Node.js version
-          cache: 'npm' # Enable npm caching for faster builds
-          cache-dependency-path: backend/package-lock.json
+    # Build the backend application
+    - name: Build Backend Application
+      run: |
+        cd backend
+        # Add your build steps here, e.g., npm install, mvn package, etc.
+        # Example for a Node.js app:
+        npm install
+        npm run build
 
-      # Step 3: Install dependencies
-      - name: Install Dependencies
-        working-directory: ./backend
-        run: npm ci
+    # Deploy to EC2
+    - name: Deploy to EC2
+      env:
+        EC2_HOST: ${{ secrets.EC2_HOST }}
+        SSH_USER: ${{ secrets.SSH_USER }}
+      run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key.pem
+        chmod 600 ssh_key.pem
 
-      # Step 4: Build the application
-      - name: Build Application
-        working-directory: ./backend
-        run: npm run build
+        # Compress and transfer the build directory
+        tar -czf backend.tar.gz backend
+        scp -i ssh_key.pem backend.tar.gz $SSH_USER@$EC2_HOST:/tmp/backend.tar.gz
 
-      # Step 5: Prepare SSH access
-      - name: Create SSH Directory
-        run: mkdir -p ~/.ssh/
-      
-      - name: Add SSH Private Key
-        run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-          chmod 400 ~/.ssh/deploy_key
-          
-      - name: Add EC2 Host to Known Hosts
-        run: ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+        # SSH into the EC2 instance to extract and deploy
+        ssh -i ssh_key.pem $SSH_USER@$EC2_HOST << 'EOF'
+          set -e
+          cd /var/www/html  # Adjust this path to your deployment directory
+          sudo rm -rf backend  # Remove the old code
+          sudo mkdir -p backend
+          sudo tar -xzf /tmp/backend.tar.gz -C backend --strip-components=1
+          sudo systemctl restart nginx  # Restart Nginx if needed
+        EOF
 
-      # Step 6: Deploy the application
-      - name: Deploy to EC2
-        working-directory: ./backend
-        run: |
-          # Archive only the built files
-          tar -czf deploy.tar.gz dist package.json package-lock.json
-          # Copy archive to EC2 instance
-          scp -i ~/.ssh/deploy_key deploy.tar.gz ${{ secrets.SSH_USER }}@${{ secrets.EC2_HOST }}:/tmp/
-          # SSH into EC2 and deploy
-          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            mkdir -p /var/www/backend
-            cd /var/www/backend
-            # Backup existing deployment
-            backup_dir="/var/www/backups/backend-$(date +%Y%m%d-%H%M%S)"
-            mkdir -p "$backup_dir"
-            cp -r * "$backup_dir" 2>/dev/null || true
-            # Clean current deployment and extract new files
-            rm -rf *
-            tar -xzf /tmp/deploy.tar.gz
-            # Install production dependencies and restart server
-            npm ci --production
-            pm2 restart server
-            # Clean up temporary files
-            sudo rm /tmp/deploy.tar.gz
-          EOF
+        # Cleanup
+        rm -f ssh_key.pem backend.tar.gz
