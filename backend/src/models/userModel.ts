@@ -8,7 +8,7 @@ export interface IUser extends Document {
   role: "admin" | "verifier" | "user";
 }
 
-// Define the User schema
+//User schema
 const UserSchema: Schema = new Schema({
   name: {
     type: String,
