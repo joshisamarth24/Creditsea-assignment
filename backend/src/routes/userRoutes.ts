@@ -10,6 +10,7 @@ interface AuthRequest extends Request {
   user: IUser;
 }
 
+
 const router = express.Router();
 
 router.get(
